@@ -45,7 +45,16 @@ class CalculatorViewModel : ViewModel() {
                 is CalculatorOperation.Add -> number1 + number2
                 is CalculatorOperation.Subtract -> number1 - number2
                 is CalculatorOperation.MultiPly -> number1 * number2
-                is CalculatorOperation.Divide -> number1 / number2
+                is CalculatorOperation.Divide ->
+                    if (number2 == 0.0){
+                        state.error = true
+                        state = state.copy(
+                            number1 = CalculatorState.ERROR_STATE,
+                            number2 = "",
+                            operation = null
+                        )
+                        return
+                }else number1 / number2
                 null -> return
             }
             state = state.copy(
@@ -81,6 +90,13 @@ class CalculatorViewModel : ViewModel() {
     }
 
     private fun enterNumber(number: Int) {
+        if (state.error) {
+            state = state.copy(
+                number1 = ""
+            )
+            state.error = false
+        }
+
         if (state.operation == null) {
             if (state.number1.length >= MAX_NUM_LENGTH) {
                 return
